@@ -1,7 +1,12 @@
 #include "Window.h"
 
+#include <iostream>
+#include <filesystem>
+
+#include <stb/stb_image.h>
+
 Window::Window(const char* title, float widthRatio, float heightRatio, GLFWmonitor* screenMode, GLFWwindow* share)
-  :m_widthRatio{ widthRatio }
+  : m_widthRatio{ widthRatio }
   , m_heightRatio{ heightRatio }
 {
   //glfw init

@@ -47,17 +47,17 @@ public:
     int offset{};
   };
 
-  Buffer(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::array<std::string_view, 2>& paths);
-  Buffer(const std::vector<float>& vertices, const std::array<std::string_view, 2>& paths);
+  Buffer(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
+  Buffer(const std::vector<float>& vertices);
   ~Buffer();
 
   constexpr GLuint getVAO() const { return m_VAO; }
   constexpr GLsizei getStride() const { return 12 * sizeof(float); }
   template <typename T>
   constexpr std::size_t getSize(const std::vector<T>& vec) const { return vec.size() * sizeof(T); }
-  constexpr GLuint getTexture(int x) const { return (x == 1) ? m_TO1 : m_TO2; }
 
   void remoteVAO(GLuint& VAO) const;
+  GLuint remoteVAO() const;
 private:
   static constexpr Attribute m_position{ 0u, 3, 0 };
   static constexpr Attribute m_color{ 1u, 4, (sizeof(float) * 3) };
@@ -67,6 +67,4 @@ private:
   GLuint m_VBO{};
   GLuint m_VAO{};
   GLuint m_EBO{};
-  GLuint m_TO1{};
-  GLuint m_TO2{};
 };

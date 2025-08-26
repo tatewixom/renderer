@@ -21,6 +21,8 @@ public:
     projection,
     model, 
     view,
+    ortho,
+    mvp,
   };
 
   Shader(std::string_view vertex, std::string_view fragment);
@@ -44,7 +46,9 @@ public:
 
   void set(std::string_view var, int x) const;
 
-  void set(Shader::Variables var, glm::mat4 mat) const;
+  void set(Shader::Variables var, const glm::mat4& mat) const;
+
+  void set(std::string_view var, const glm::mat4& mat) const;
 
   constexpr void activate() const { glUseProgram(m_program); }
   constexpr void deactivate() const { glUseProgram(0); }

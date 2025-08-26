@@ -1,12 +1,7 @@
 #pragma once
 
-#include <iostream>
-#include <filesystem>
-
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
-
-#include <stb/stb_image.h>
 
 class Window
 {
@@ -19,8 +14,8 @@ public:
   operator GLFWwindow* () const { return m_window; }
 
   GLFWwindow* getWindow() { return m_window; }
-  constexpr float width() const { return static_cast<float>(m_width); }
-  constexpr float height() const { return static_cast<float>(m_height); }
+  float width() const { int width{}; glfwGetWindowSize(m_window, &width, nullptr); return static_cast<float>(width); }
+  float height() const { int height{}; glfwGetWindowSize(m_window, nullptr, &height); return static_cast<float>(height); }
 
   void size(int width, int height) { glViewport(0, 0, width, height); }
   void close() { glfwSetWindowShouldClose(m_window, true); }

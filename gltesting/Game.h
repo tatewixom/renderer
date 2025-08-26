@@ -1,14 +1,8 @@
 #pragma once
 
+#include "State.h"
 #include "Window.h"
-#include "Input.h"
-#include "Shader.h"
-#include "Buffer.h"
 #include "Camera.h"
-#include "Callback.h"
-#include "Cube.h"
-
-#include <glm/gtc/matrix_transform.hpp>
 
 class Game
 {
@@ -18,17 +12,15 @@ public:
   GLFWwindow* getWindow() const { return m_window; }
 
   void initialize();
-  void processInput();
-  void clear();
-  void update();
-  void render();
   void run();
 
   Camera& getCamera() { return m_camera; }
+  Window& getWindow() { return m_window; }
 
 private:
-  Window m_window{ "LearnOpenGL" };
+  State m_state{};
 
+  Window m_window{ "LearnOpenGL" };
   Camera m_camera{ 120.f };
 };
 

@@ -41,6 +41,7 @@ public:
   void mouse(float xoffset, float yoffset, GLboolean constrainPitch = true);
 
   glm::mat4 getViewMatrix() const { return glm::lookAt(position, position + front, up); }
+
 private:
   void updateVectors();
 };

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Game.h"
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
 
 namespace Callback
 {
@@ -8,4 +9,5 @@ namespace Callback
   void mouse(GLFWwindow* window, double xposIn, double yposIn);
   void scroll(GLFWwindow* window, double xoffset, double yoffset);
   void refresh(GLFWwindow* window);
+  void mouseButton(GLFWwindow* window, int button, int action, int mods);
 }

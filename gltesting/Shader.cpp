@@ -10,6 +10,10 @@ static constexpr std::string_view getString(Shader::Variables var)
     return "model";
   case Shader::view:
     return "view";
+  case Shader::ortho:
+    return "ortho";
+  case Shader::mvp:
+    return "mvp";
   default:
     return "ERROR::SHADER.CPP::GETSTRING::UNKNOWN_ENUMERATION\n";
   }
@@ -113,7 +117,11 @@ void Shader::set(std::string_view var, int x) const
   glUniform1i(glGetUniformLocation(m_program, var.data()), x);
 }
 
-void Shader::set(Shader::Variables var, glm::mat4 mat) const
+void Shader::set(Shader::Variables var, const glm::mat4& mat) const
 {
   glUniformMatrix4fv(glGetUniformLocation(m_program, getString(var).data()), 1, GL_FALSE, glm::value_ptr(mat));
+}
+void Shader::set(std::string_view var, const glm::mat4& mat) const
+{
+  glUniformMatrix4fv(glGetUniformLocation(m_program, var.data()), 1, GL_FALSE, glm::value_ptr(mat));
 }
