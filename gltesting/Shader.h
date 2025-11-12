@@ -1,7 +1,5 @@
 #pragma once
 
-#include "File.h"
-
 #include <iostream>
 #include <string_view>
 #include <utility>
@@ -26,10 +24,13 @@ public:
   };
 
   Shader(std::string_view vertex, std::string_view fragment);
+  Shader() = default;
   ~Shader();
 
   //implicity converts shader object to GLuint m_program when used in glUseProgram function (and like functions)
   operator GLuint() const { return m_program; }
+
+  void initialize(std::string_view vertex, std::string_view fragment);
 
   void destroyProgram() const { glDeleteProgram(m_program); }
 

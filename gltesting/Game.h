@@ -3,25 +3,25 @@
 #include "State.h"
 #include "Window.h"
 #include "Camera.h"
+#include "Mouse.h"
 
 class Game
 {
 public:
   Game();
 
-  GLFWwindow* getWindow() const { return m_window; }
-
   void initialize();
   void run();
 
-  Camera& getCamera() { return m_camera; }
   Window& getWindow() { return m_window; }
+  Mouse& getMouse() { return m_mouse; }
+  Camera& getCamera() { return m_camera; }
 
 private:
-  State m_state{};
-
   Window m_window{ "LearnOpenGL" };
+  Mouse m_mouse{ m_window };
   Camera m_camera{ 120.f };
+  State m_state{};
 };
 
 extern Game game;

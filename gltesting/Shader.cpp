@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include "File.h"
 
 static constexpr std::string_view getString(Shader::Variables var)
 {
@@ -15,7 +16,7 @@ static constexpr std::string_view getString(Shader::Variables var)
   case Shader::mvp:
     return "mvp";
   default:
-    return "ERROR::SHADER.CPP::GETSTRING::UNKNOWN_ENUMERATION\n";
+    return "ERROR::SHADER.CPP::GETSTRING()::UNKNOWN_ENUMERATION\n";
   }
 }
 
@@ -55,6 +56,32 @@ Shader::~Shader()
   glDeleteProgram(m_program);
 }
 
+void Shader::initialize(std::string_view vertex, std::string_view fragment)
+{
+  m_program = glCreateProgram();
+  m_vertex = glCreateShader(GL_VERTEX_SHADER);
+  m_fragment = glCreateShader(GL_FRAGMENT_SHADER);
+
+  std::optional<std::string> vertexFile{ File::retrieve(vertex) };
+  std::optional<std::string> fragmentFile{ File::retrieve(fragment) };
+
+  if ((!vertexFile) || (!fragmentFile))
+    ;
+  else
+  {
+    //compile vertex shader
+    const char* vertContents{ vertexFile.value().c_str() };
+    compile(m_vertex, vertContents);
+
+    //compile fragment shader
+    const char* fragContents{ fragmentFile.value().c_str() };
+    compile(m_fragment, fragContents);
+
+    //link shaders to program
+    link(m_program, m_vertex, m_fragment);
+  }
+}
+
 void Shader::compile(const GLuint shader, const char* contents)
 {
   GLint success{};
@@ -68,7 +95,7 @@ void Shader::compile(const GLuint shader, const char* contents)
   {
     char infoLog[512]{};
     glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-    std::cerr << "ERROR::SHADER.H::SHADERFAILED::FAILURE_IN_COMPILATION_OF_SHADER\n";
+    std::cerr << "ERROR::SHADER.H::COMPILE()::FAILURE_IN_COMPILATION_OF_SHADER\n";
     std::cerr << infoLog << '\n';
   }
 }
@@ -87,7 +114,7 @@ void Shader::link(GLuint program, GLuint vertex, GLuint fragment)
   {
     char infoLog[512]{};
     glGetProgramInfoLog(program, 512, nullptr, infoLog);
-    std::cerr << "ERROR::SHADER.H::PROGRAMFAILED::FAILURE_ATTACHING_SHADERS_TO_PROGRAM\n";
+    std::cerr << "ERROR::SHADER.H::COMPILE()::FAILURE_ATTACHING_SHADERS_TO_PROGRAM\n";
     std::cerr << infoLog << '\n';
   }
 }

@@ -2,26 +2,32 @@
 #include "Window.h"
 #include "Callback.h"
 
-Mouse mmouse{};
-
-void Mouse::center(Window& window)
+Mouse::Mouse(Window& window)
+  : m_window{ window }
 {
-  glfwSetCursorPos(window, window.width() / 2, window.height() / 2);
+  glfwSetCursorPosCallback(m_window, Callback::mouse);
+  glfwSetScrollCallback(m_window, Callback::scroll);
+  glfwSetMouseButtonCallback(m_window, Callback::mouseButton);
 }
 
-void Mouse::viewMode(Window& window)
+void Mouse::center()
+{
+  glfwSetCursorPos(m_window, m_window.width() / 2, m_window.height() / 2);
+}
+
+void Mouse::viewMode()
 {
   m_position = m_lastPosition;
 
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void Mouse::selectionMode(Window& window)
+void Mouse::selectionMode()
 {
   m_lastPosition = m_position;
 
-  center(window);
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+  center();
+  glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 bool Mouse::isButtonPressed(int mouseButton) const
@@ -32,9 +38,9 @@ bool Mouse::isButtonPressed(int mouseButton) const
   return false;
 }
 
-bool Mouse::isDisabled(Window& window) const
+bool Mouse::isDisabled() const
 {
-  return glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
+  return glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED;
 }
 
 void Mouse::setLastPosition()
@@ -45,4 +51,9 @@ void Mouse::setLastPosition()
 bool operator==(const Mouse::Position& pos1, const Mouse::Position & pos2)
 {
   return (pos1.x == pos2.x) && (pos1.y == pos2.y);
+}
+
+Mouse::Position operator-(const Mouse::Position& pos1, const Mouse::Position& pos2)
+{
+  return Mouse::Position{ pos1.x - pos2.x, pos1.y - pos2.y };
 }

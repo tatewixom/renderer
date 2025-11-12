@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <deque>
 
 #include <glad/glad.h>
 
@@ -12,18 +13,22 @@ public:
   Texture(const std::string_view path);
 
   GLint getID() const { return m_id; }
-  std::string_view getPath() const { return m_path; }
-  GLint getMaxUnits();
   int getLocation() const { return m_assignedUnit - static_cast<int>(GL_TEXTURE0); }
 
-  bool isRGBA();
+  int use();
 
 private:
-  std::string_view m_path{}; //path to texture 
+  bool isRGBA(const std::string_view path);
+
+  void load(const std::string_view path);
+
+  GLint getMaxUnits();
+
+private:
   GLuint m_id{}; //texture object id
-  int m_assignedUnit{ static_cast<int>(GL_TEXTURE0) };
+  int m_assignedUnit{};
 
 private:
-  
+  static std::deque<Texture*> s_textureQueue;
   static int s_activeUnits;
 };

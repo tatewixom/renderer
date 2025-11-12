@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Buffer.h"
+#include "Random.h"
 
 #include <glad/glad.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 class Camera;
 class Shader;
@@ -42,13 +44,7 @@ public:
   public:
     Rotation() = default;
 
-    Rotation(const glm::vec3& axis, float angle)
-      : m_axis{ axis }
-      , m_angle{ angle }
-    {
-      if (m_axis == glm::vec3{ 0.f, 0.f, 0.f })
-        m_axis = glm::vec3{ 0.f, 1.f, 0.f };
-    }
+    Rotation(const glm::vec3& axis, float angle);
 
     auto angle() const { return glm::radians(m_angle); }
 
@@ -61,17 +57,9 @@ public:
 
   Object() = default;
 
-  Object(const Buffer& buffer, glm::vec3 position, const Material& material)
-    : m_position{ position }
-    , m_material{ material }
-    , m_VAO{ buffer.getVAO() }
-  { }
+  Object(const Buffer& buffer, glm::vec3 position, const Material& material);
 
-  Object(const GLuint VAO, glm::vec3 position, const Material& material)
-    : m_position{ position }
-    , m_material{ material }
-    , m_VAO{ VAO }
-  { }
+  Object(const GLuint VAO, glm::vec3 position, const Material& material);
 
   //static object manipulation/initialization
   void move(const glm::vec3& direction);
@@ -85,7 +73,7 @@ public:
   void draw(const Shader& shader) const;
 
   //getting/setting position
-  glm::vec3& position() { return m_position; }
+  glm::vec3 position() const { return m_position; }
   void position(const glm::vec3& position) { m_position = position; }
 
   //getting/setting dimensions
@@ -96,6 +84,10 @@ public:
 
   //scaling
   glm::vec3& scalar() { return m_dimensions.scalar; }
+
+  //material
+  void material(const Material& material);
+  Material material() const { return m_material; }
 
 protected:
   glm::vec3 m_position{};
@@ -108,3 +100,14 @@ protected:
   //forward declaration
   static Spaces s_spaces;
 };
+
+class Caster
+{
+  //small class/struct for a caster of light
+};
+
+class Cognate
+{
+  //associated items; not exact copies
+};
+

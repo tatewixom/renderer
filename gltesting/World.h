@@ -1,21 +1,21 @@
 #pragma once
 
 #include "State.h"
+#include "Ditto.h"
+#include "Collection.h"
 #include "Interface.h"
+#include "Object.h"
+#include "Shader.h"
+#include "Buffer.h"
 
 class Window;
 class Camera;
+class Mouse;
 
 class World final : public IState
 {
 public:
-  World(State& state, Window& window, Camera& camera)
-    : IState{ state }
-    , m_window{ window }
-    , m_camera{ camera }
-  {
-    initialize();
-  }
+  World(State& state, Window& window, Camera& camera, Mouse& mouse);
 
   ~World() override
   {
@@ -33,6 +33,7 @@ public:
 private:
   Window& m_window;
   Camera& m_camera;
+  Mouse& m_mouse;
 
-  std::unique_ptr<Interface> interface{ std::make_unique<Interface>(m_state, m_window, m_camera) };
+  std::unique_ptr<Interface> m_interface{ std::make_unique<Interface>(m_state, m_window, m_camera, m_mouse) };
 };

@@ -46,6 +46,15 @@ namespace
   Interface::Element grabBar{ backgroundBuffer, glm::vec2{ 0.0f }, Interface::Element::Dimension{ Points::bd.x,  Points::bd.y } };
 }
 
+Interface::Interface(State& state, Window& window, Camera& camera, Mouse& mouse)
+  : IState{ state }
+  , m_window{ window }
+  , m_camera{ camera }
+  , m_mouse{ mouse }
+{
+  initialize();
+}
+
 void Interface::initialize()
 {
   grabBar.scalar(glm::vec2{ 1.f, 0.1f });
@@ -59,22 +68,27 @@ void Interface::input()
   if (Input::isKeyJustPressed(m_window, GLFW_KEY_0))
   {
     if (glfwGetInputMode(m_window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
-      mmouse.selectionMode(m_window);
+      m_mouse.selectionMode();
     else
-      mmouse.viewMode(m_window);
+      m_mouse.viewMode();
   }
 
-  if (Input::isKeyJustPressed(m_window, GLFW_KEY_9))
+  if (!m_mouse.isDisabled() && 
+    m_mouse.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT) &&
+    grabBar.hitbox().isIntersecting(static_cast<float>(m_mouse.getPosition().x), m_window.height() - static_cast<float>(m_mouse.getPosition().y)))
   {
-    std::cout << "Background Position: (" << background.position().x << ", " << background.position().y << ")\n";
-  }
+    //offset = newMousePosition - lastMousePosition;
 
-  if (!mmouse.isDisabled(m_window) && mmouse.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT) &&
-    grabBar.hitbox().isIntersecting(mmouse.getPosition().x, m_window.height() - mmouse.getPosition().y))
-  {
-    background.position(glm::vec2{ background.position().x + mmouse.getOffset().x, background.position().y + mmouse.getOffset().y });
-    grabBar.position(background, glm::vec2{ 0.0f, background.dimensions().height() - grabBar.dimensions().height() });
+    static Mouse::Position lastMousePosition{};
+
+    if (lastMousePosition != m_mouse.getPosition())
+    {
+      background.position(glm::vec2{ background.position().x + m_mouse.getOffset().x, background.position().y + m_mouse.getOffset().y });
+      grabBar.position(background, glm::vec2{ 0.0f, background.dimensions().height() - grabBar.dimensions().height() });
       //need to make a set of logic that has the window move in whatever direction the mouse moves in the same amount of units and doesn't lag behind 
+    }
+
+    lastMousePosition = m_mouse.getPosition();
   }
 }
 
@@ -91,13 +105,11 @@ void Interface::render()
 
   shader.activate();
   shader.set("color", glm::vec4{ 0.f, 0.f, 0.f, 0.5f });
-  shader.deactivate();
 
   background.draw(shader);
 
   shader.activate();
   shader.set("color", glm::vec4{ 0.28f, 0.29f, 0.30f, 1.0f });
-  shader.deactivate();
 
   grabBar.draw(shader);
 
@@ -140,9 +152,6 @@ void Interface::Element::draw(const Shader& shader) const
 
   glBindVertexArray(m_VAO);
   glDrawArrays(GL_TRIANGLES, 0, 6); // 36 is the amount of vertices 
-  glBindVertexArray(0);
-
-  shader.deactivate();
 }
 
 void Interface::Element::position(const glm::vec2& position)
@@ -173,18 +182,12 @@ void Interface::Element::update(Window& window)
 
 bool Interface::Element::Hitbox::isIntersecting(const glm::vec2& point) const
 {
-  if ((point.x > area.x1 && point.x < area.x2) && (point.y > area.y1 && point.y < area.y2)) // keep in mind w = x1 and x = x2
-    return true;
-
-  return false;
+  return (point.x > area.x1 && point.x < area.x2) && (point.y > area.y1 && point.y < area.y2); 
 }
 
 bool Interface::Element::Hitbox::isIntersecting(const float x, const float y) const
 {
-  if ((x > area.x1 && x < area.x2) && (y > area.y1 && y < area.y2))
-    return true;
-
-  return false;
+  return (x > area.x1 && x < area.x2) && (y > area.y1 && y < area.y2);
 }
 
 bool Interface::Element::Hitbox::isIntersecting(const Element& element)

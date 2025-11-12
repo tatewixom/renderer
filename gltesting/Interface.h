@@ -71,7 +71,7 @@ public:
       bool isIntersecting(const float x, const float y) const;
       bool isIntersecting(const Element& element);
 
-      void target(const Mouse& mouse); //make a function for when the mouse is pressed, the element is targetted on the mouse position 
+      //void target(const Mouse& mouse); //make a function for when the mouse is pressed, the element is targetted on the mouse position 
 
       Area area{};
     };
@@ -115,13 +115,7 @@ public:
     static Space s_spaces;
   };
 
-  Interface(State& state, Window& window, Camera& camera)
-    : IState{ state }
-    , m_window{ window }
-    , m_camera{ camera }
-  {
-    initialize();
-  }
+  Interface(State& state, Window& window, Camera& camera, Mouse& mouse);
 
   ~Interface() override
   {
@@ -138,5 +132,6 @@ public:
 private:
   Window& m_window;
   Camera& m_camera;
+  Mouse& m_mouse;
 };
 

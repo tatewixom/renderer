@@ -140,12 +140,14 @@
     <ClCompile Include="Callback.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collection.cpp" />
+    <ClCompile Include="Ditto.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -160,22 +162,31 @@
     <None Include="basic.vs" />
     <None Include="color.fs" />
     <None Include="color.vs" />
+    <None Include="instancing_normal_light.fs" />
+    <None Include="instancing_normal_light.vs" />
+    <None Include="instancing_spotlight.fs" />
+    <None Include="instancing_spotlight.vs" />
     <None Include="interface.fs" />
     <None Include="interface.vs" />
     <None Include="light.fs" />
     <None Include="light.vs" />
+    <None Include="test.fs" />
+    <None Include="test.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Buffer.h" />
     <ClInclude Include="Callback.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collection.h" />
+    <ClInclude Include="Ditto.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Interface.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="Points.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="State.h" />

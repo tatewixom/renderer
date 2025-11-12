@@ -5,13 +5,13 @@
 
 Buffer::Buffer(const std::vector<float>& vertices, const std::vector<unsigned int>& indices)
 {
-  glGenBuffers(1, &m_VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-  glBufferData(GL_ARRAY_BUFFER, getSize(vertices), vertices.data(), GL_STATIC_DRAW);
-
   //generating vertex array object
   glGenVertexArrays(1, &m_VAO);
   glBindVertexArray(m_VAO);
+
+  glGenBuffers(1, &m_VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+  glBufferData(GL_ARRAY_BUFFER, getSize(vertices), vertices.data(), GL_STATIC_DRAW);
 
   //creating an element array buffer to store indices in to tell opengl how to draw rectangle
   glGenBuffers(1, &m_EBO);
@@ -37,13 +37,13 @@ Buffer::Buffer(const std::vector<float>& vertices, const std::vector<unsigned in
 
 Buffer::Buffer(const std::vector<float>& vertices)
 {
-  glGenBuffers(1, &m_VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-  glBufferData(GL_ARRAY_BUFFER, getSize(vertices), vertices.data(), GL_STATIC_DRAW);
-
   //generating vertex array object
   glGenVertexArrays(1, &m_VAO);
   glBindVertexArray(m_VAO);
+
+  glGenBuffers(1, &m_VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+  glBufferData(GL_ARRAY_BUFFER, getSize(vertices), vertices.data(), GL_STATIC_DRAW);
 
   //creating preferred settings for telling opengl how to connect data
   glEnableVertexAttribArray(m_position.location);
@@ -102,4 +102,11 @@ GLuint Buffer::remoteVAO() const
   glEnableVertexAttribArray(0);
 
   return VAO;
+
+  glGenVertexArrays(1, &VAO);
+  glBindVertexArray(VAO);
+  glBindVertexArray(0);
+
+  // we only need to bind to the VBO, the container's VBO's data already contains the data.
+  glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 }

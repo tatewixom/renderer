@@ -1,12 +1,14 @@
 #include "Callback.h"
 #include "Game.h"
-#include "Mouse.h"
 
 namespace Callback
 {
   bool firstMouse{ true };
-  float lastX{ (game.getWindow().width()) / 2.0f };
-  float lastY{ (game.getWindow().height()) / 2.0f };
+
+  double lastX{ (game.getWindow().width()) / 2.0f };
+  double lastY{ (game.getWindow().height()) / 2.0f };
+
+  Mouse::Position cameraMovement{};
 
   void framebuffer(GLFWwindow* window, int width, int height)
   {
@@ -15,31 +17,38 @@ namespace Callback
 
   void mouse(GLFWwindow* window, double xposIn, double yposIn)
   {
+    game.getMouse().getPosition().x = xposIn;
+    game.getMouse().getPosition().y = yposIn;
+
     if (firstMouse)
     {
-      lastX = static_cast<float>(xposIn);
-      lastY = static_cast<float>(yposIn);
+      lastX = xposIn;
+      lastY = yposIn;
       firstMouse = false;
     }
 
-    float xOffset{ static_cast<float>(xposIn) - lastX };
-    float yOffset{ lastY - static_cast<float>(yposIn) };
-    lastX = static_cast<float>(xposIn);
-    lastY = static_cast<float>(yposIn);
+    game.getMouse().getLastPosition().x = lastX;
+    game.getMouse().getLastPosition().y = lastY;
 
-    mmouse.getPosition().x = lastX;
-    mmouse.getPosition().y = lastY;
-    mmouse.getOffset().x = xOffset;
-    mmouse.getOffset().y = yOffset;
+    //std::cout << mmouse.getLastPosition().x << ' ' << mmouse.getLastPosition().y << '\n';
+
+    game.getMouse().getOffset().x = xposIn - lastX;
+    game.getMouse().getOffset().y = lastY - yposIn;
+
+    lastX = xposIn;
+    lastY = yposIn;
 
     const float sensitivity{ 0.1f };
-    xOffset *= sensitivity;
-    yOffset *= sensitivity;
 
-    if (mmouse.isDisabled(game.getWindow()))
+    cameraMovement = Mouse::Position{ game.getMouse().getOffset().x, game.getMouse().getOffset().y };
+
+    cameraMovement.x *= sensitivity;
+    cameraMovement.y *= sensitivity;
+
+    if (game.getMouse().isDisabled())
     {
-      game.getCamera().yaw += xOffset;
-      game.getCamera().pitch += yOffset;
+      game.getCamera().yaw += static_cast<float>(cameraMovement.x);
+      game.getCamera().pitch += static_cast<float>(cameraMovement.y);
 
       if (game.getCamera().pitch > 89.0f)
         game.getCamera().pitch = 89.0f;
@@ -70,7 +79,7 @@ namespace Callback
   }
   void mouseButton(GLFWwindow* window, int button, int action, int mods)
   {
-    mmouse.getButton().button = button;
-    mmouse.getButton().action = action;
+    game.getMouse().getButton().button = button;
+    game.getMouse().getButton().action = action;
   }
 }

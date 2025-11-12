@@ -1,69 +1,12 @@
 #include "World.h"
-#include "Shader.h"
-#include "Buffer.h"
-#include "Collection.h"
 #include "Input.h"
 #include "Window.h"
 #include "Camera.h"
 #include "Random.h"
+#include "Mouse.h"
+#include "Points.h"
 
 #include <memory>
-
-namespace Points
-{
-  //cube vertices
-  std::vector<float> vertices
-  {
-    //position            //color                 //texture    //normals
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 1.0f,  0.0f,  0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f,  0.0f,  0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 0.0f,  0.0f,  0.0f, -1.0f,
-
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f,  0.0f,  0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 1.0f,  0.0f,  0.0f,  1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f,  0.0f,  0.0f,  1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 0.0f,  0.0f,  0.0f,  1.0f,
-
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 1.0f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f, -1.0f,  0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f, -1.0f,  0.0f,  0.0f,
-
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 1.0f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f,  1.0f,  0.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 0.0f,  1.0f,  0.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f,  1.0f,  0.0f,  0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 0.0f,  0.0f, -1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f,  0.0f, -1.0f,  0.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 1.f,  0.0f, 1.0f,  0.0f,  1.0f,  0.0f
-  };
-
-  std::vector<unsigned int> indices
-  {
-    0, 1, 3,   // first triangle
-    1, 2, 3,   // second triangle 
-  };
-}
 
 namespace
 {
@@ -71,41 +14,127 @@ namespace
   float deltaTime{};
   float lastFrame{};
 
-  Buffer buffer{ Points::vertices };
+  Buffer buffer{ Points::Cube::vertices, Points::Cube::indices };
 
   Shader basic{ "basic.vs", "basic.fs" };
   Shader color{ "color.vs", "color.fs" };
   Shader light{ "light.vs", "light.fs" };
+  Shader test{ "test.vs", "test.fs" };
+  Shader instancing_spotlight{ "instancing_spotlight.vs", "instancing_spotlight.fs" };
 
-  Collection cubes{ 40, Object{ buffer, glm::vec3{ 0.0f }, Object::Material{} } };
-  Collection lights{ 1, Object{ buffer.remoteVAO(), glm::vec3{ 0.0f }, Object::Material{} } };
+  Ditto ditto
+  {
+    Points::Cube::vertices,
+    Points::Cube::indices,
+    std::vector<Mesh::Layout::Attribute>
+    {
+      Mesh::Layout::Attribute{ 0u, 3, 12 * sizeof(float), 0 },
+      Mesh::Layout::Attribute{ 1u, 4, 12 * sizeof(float), (sizeof(float) * 3) },
+      Mesh::Layout::Attribute{ 2u, 2, 12 * sizeof(float), (sizeof(float) * 7) },
+      Mesh::Layout::Attribute{ 3u, 3, 12 * sizeof(float), (sizeof(float) * 9) }
+    },
+    instancing_spotlight
+  };
+
+  Collection cubes
+  {
+    10,
+    Object
+    {
+      buffer, 
+      glm::vec3{ 0.0f },
+      Object::Material{ glm::vec3{ 1.0f, 0.5f, 0.31f }, glm::vec3{ 1.0f, 0.5f, 0.31f }, glm::vec3{ 0.5f, 0.5f, 0.5f }, 32.f }
+    }
+  };
+
+  Object lights{ buffer, glm::vec3{ 0.0f }, Object::Material{} };
 
   Texture container{ "assets/container.jpg" };
   Texture awesomeFace{ "assets/awesomeface.png" };
+  Texture steelbox{ "assets/container2.png" };
+  Texture steelbox_specular{ "assets/container2_specular.png" };
 
-  glm::vec3 randomColor{ Random::get(10, 90), Random::get(10, 90), Random::get(10, 90), };
+  //glm::vec3 randomColor{ Random::get(10, 90), Random::get(10, 90), Random::get(10, 90), };
+}
+
+World::World(State& state, Window& window, Camera& camera, Mouse& mouse)
+  : IState{ state }
+  , m_window{ window }
+  , m_camera{ camera }
+  , m_mouse{ mouse }
+{
+  initialize();
 }
 
 void World::initialize()
 {
-  //using shader program
   basic.activate();
-  basic.set("texture1", container.getLocation());
-  basic.set("texture2", awesomeFace.getLocation());
+  basic.set("texture1", container.use());
+  basic.set("texture2", awesomeFace.use());
   basic.set("opacity", 0.2f);
-  basic.deactivate();
 
   light.activate();
   light.set("color", glm::vec3{ 1.0, 1.0, 1.0 });
-  light.deactivate();
 
   color.activate();
-  color.set("objectColor", glm::vec3{ 0.6f, 0.5f, 1.0f });
-  color.set("lightColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
-  color.deactivate();
+  color.set("objectColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
+  
+  color.set("material.diffuse", steelbox.use());
+  color.set("material.specular", steelbox_specular.use());
+  color.set("material.shininess", cubes.object().material().shininess);
 
-  for (auto& cube : lights)
-    cube.scale(glm::vec3{ 0.2f });
+  color.set("lightPoint.position", lights.position());
+  color.set("lightPoint.ambient", glm::vec3{ 0.5f, 0.5f, 0.5f });
+  color.set("lightPoint.diffuse", glm::vec3{ 0.5f, 0.5f, 0.5f });
+  color.set("lightPoint.specular", glm::vec3{ 1.0f, 1.0f, 1.0f });
+  color.set("lightPoint.constant", 1.0f);
+  color.set("lightPoint.linear", 0.09f);
+  color.set("lightPoint.quadratic", 0.032f);
+
+  color.set("lightCaster.direction", glm::vec3{ -0.2f, -1.0f, -0.3f });
+  color.set("lightCaster.ambient", glm::vec3{ 0.2f, 0.2f, 0.2f });
+  color.set("lightCaster.diffuse", glm::vec3{ 0.5f, 0.5f, 0.5f });
+  color.set("lightCaster.specular", glm::vec3{ 1.0f, 1.0f, 1.0f });
+
+  instancing_spotlight.activate();
+  instancing_spotlight.set("objectColor", glm::vec3{ 1.0f, 1.0f, 1.0f });
+
+  instancing_spotlight.set("material.diffuse", steelbox.use());
+  instancing_spotlight.set("material.specular", steelbox_specular.use());
+  instancing_spotlight.set("material.shininess", cubes.object().material().shininess);
+
+  instancing_spotlight.set("spotlight.position", lights.position());
+  instancing_spotlight.set("spotlight.ambient", glm::vec3{ 0.1f, 0.1f, 0.1f });
+  instancing_spotlight.set("spotlight.diffuse", glm::vec3{ 0.5f, 0.5f, 0.5f });
+  instancing_spotlight.set("spotlight.specular", glm::vec3{ 1.0f, 1.0f, 1.0f });
+  instancing_spotlight.set("spotlight.constant", 0.5f);
+  instancing_spotlight.set("spotlight.linear", 0.09f);
+  instancing_spotlight.set("spotlight.quadratic", 0.032f);
+  instancing_spotlight.set("spotlight.direction", glm::vec3{ -0.2f, -1.0f, -0.3f });
+  instancing_spotlight.set("spotlight.cutoff", glm::cos(glm::radians(35.0f)));
+  instancing_spotlight.set("spotlight.outerCutoff", glm::cos(glm::radians(40.0f)));
+
+  test.activate();
+  test.set("texture1", steelbox.use());
+
+  lights.scale(glm::vec3{ 0.2f });
+
+  std::size_t amount{ 100000 };
+  std::vector<glm::mat4> matrices(amount);
+  std::vector<Ditto::Motions> motions{};
+  motions.reserve(amount);
+  for (std::size_t i{ 0 }; i < amount; ++i)
+  {
+    motions.push_back(
+      Ditto::Motions
+      { 
+        glm::vec3{ Random::get(-100, 100), Random::get(-100, 100), Random::get(-100, 100) },
+        glm::vec3{ 1.f },
+        Ditto::Rotation{ glm::vec3{ Random::get(0, 10), Random::get(0, 10), Random::get(0, 10) }, static_cast<float>(Random::get(0, 36000)) / 100.f }
+      });
+  }
+
+  ditto.sendInstances(matrices, motions, 4u);
 }
 
 void World::input()
@@ -118,7 +147,7 @@ void World::input()
   lastFrame = currentFrame;
 
   //moving camera
-  const float cameraSpeed = 5.f * deltaTime; // adjust accordingly
+  const float cameraSpeed = 20.f * deltaTime; // adjust accordingly
   if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
     m_camera.position += cameraSpeed * m_camera.front;
   if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
@@ -132,28 +161,30 @@ void World::input()
   if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     m_camera.position -= m_camera.up * cameraSpeed;
 
-  //adding cubes
-  if (glfwGetKey(m_window, GLFW_KEY_G) == GLFW_PRESS)
-    cubes.add();
+  //cubes manipulation
+  if (Input::isKeyJustPressed(m_window, GLFW_KEY_G))
+    cubes.add(5);
+  if (Input::isKeyJustPressed(m_window, GLFW_KEY_9))
+    std::cout << cubes.size() << '\n';
 
   //moving light position
   const float objectSpeed{ 5.f * deltaTime };
   if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS)
-    lights[0].position() -= glm::vec3{ 0.0f, 0.0f, 1.0f } * objectSpeed;
+    lights.position(lights.position() - glm::vec3{ 0.0f, 0.0f, 1.0f } * objectSpeed);
   if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-    lights[0].position() += glm::vec3{ 1.0f, 0.0f, 0.0f } * objectSpeed;
+    lights.position(lights.position() + glm::vec3{ 1.0f, 0.0f, 0.0f } * objectSpeed);
   if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
-    lights[0].position() -= glm::vec3{ 1.0f, 0.0f, 0.0f } * objectSpeed;
+    lights.position(lights.position() - glm::vec3{ 1.0f, 0.0f, 0.0f } * objectSpeed);
   if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    lights[0].position() += glm::vec3{ 0.0f, 0.0f, 1.0f } * objectSpeed;
+    lights.position(lights.position() + glm::vec3{ 0.0f, 0.0f, 1.0f } * objectSpeed);
   if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS)
-    lights[0].position() += glm::vec3{ 0.0f, 1.0f, 0.0f } * objectSpeed;
+    lights.position(lights.position() + glm::vec3{ 0.0f, 1.0f, 0.0f } * objectSpeed);
   if (glfwGetKey(m_window, GLFW_KEY_F) == GLFW_PRESS)
-    lights[0].position() -= glm::vec3{ 0.0f, 1.0f, 0.0f } * objectSpeed;
+    lights.position(lights.position() - glm::vec3{ 0.0f, 1.0f, 0.0f } * objectSpeed);
 
   //states
   if (Input::isKeyJustPressed(m_window, GLFW_KEY_1))
-    m_state.push(std::make_unique<World>(m_state, m_window, m_camera));
+    m_state.push(std::make_unique<World>(m_state, m_window, m_camera, m_mouse));
   if (Input::isKeyJustPressed(m_window, GLFW_KEY_2))
     m_state.pop();
   if (Input::isKeyJustPressed(m_window, GLFW_KEY_3))
@@ -163,24 +194,32 @@ void World::input()
 void World::clear()
 {
   //clearing screen and rendering
-  glClearColor(0.2f, 0.2f, 0.2f, 0.f);
+  glClearColor(0.06f, 0.06f, 0.06f, 0.f); //signature gray
+  //glClearColor(0.f, 0.f, 0.f, 0.f); //black
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void World::update()
 {
-  color.activate();
-  color.set("lightPos", lights[0].position());
-  color.set("viewPos", m_camera.position);
-  float time{ static_cast<float>(sin(glfwGetTime())) };
-  color.set("objectColor", glm::vec3{sin(randomColor.x + time), sin(randomColor.y + time), sin(randomColor.z + time)});
-  color.deactivate();
-
   Object::update(m_camera, m_window);
+  Ditto::update(m_camera, m_window);
+
+  color.activate();
+  //color.set("lightPoint.position", m_camera.position);
+  //color.set("viewPos", m_camera.position);
+
+  instancing_spotlight.activate();
+  instancing_spotlight.set("spotlight.position", m_camera.position);
+  instancing_spotlight.set("spotlight.direction", m_camera.front);
+  instancing_spotlight.set("viewPos", m_camera.position);
+
+  //color.set("objectColor", glm::vec3{sin(randomColor.x + time), sin(randomColor.y + time), sin(randomColor.z + time)});
+
+  cubes.sort(m_camera);
 
   for (auto& cube : cubes)
   {
-    cube.rotate(Object::Rotation{ glm::vec3{ 1.f, 0.f, 0.f }, static_cast<float>(glfwGetTime() * glm::radians(100.f) * 50) });
+    cube.rotate(Object::Rotation{ glm::vec3{ cube.position().y * 2.f, cube.position().z * 3.f, cube.position().x * 9.f }, static_cast<float>(glfwGetTime() * glm::radians(100.f) * 50) });
   }
 }
 
@@ -188,18 +227,13 @@ void World::render()
 {
   glfwPollEvents();
 
-  for (auto& cube : cubes)
-  {
-    cube.draw(color);
-  }
+  //cubes.draw(color);
+  //lights.draw(light);
 
-  for (auto& cube : lights)
-  {
-    cube.draw(light);
-  }
+  ditto.draw();
 
-  interface->input();
-  interface->loop();
+  m_interface->input();
+  m_interface->loop();
 
   //swaping buffers
   glfwSwapBuffers(m_window);

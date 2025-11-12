@@ -4,27 +4,31 @@
 
 #include <stb/stb_image.h>
 
+#include <chrono>
+
 Game game{};
+
+namespace
+{
+  using clock_type = std::chrono::high_resolution_clock;
+  auto lastTime = clock_type::now();
+  int frames = 0;
+  double fps = 0.0;
+}
 
 Game::Game()
 {
   //stbi init
   stbi_set_flip_vertically_on_load(true);
 
-  glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); //setting input mode
-
-  glfwSetFramebufferSizeCallback(m_window, Callback::framebuffer);
-  glfwSetCursorPosCallback(m_window, Callback::mouse);
-  glfwSetScrollCallback(m_window, Callback::scroll);
-  glfwSetMouseButtonCallback(m_window, Callback::mouseButton);
-  glfwSetWindowRefreshCallback(m_window, Callback::refresh);
+  m_mouse.viewMode();
 
   glEnable(GL_DEPTH_TEST);
 }
 
 void Game::initialize()
 {
-  m_state.push(std::make_unique<World>(m_state, m_window, m_camera));
+  m_state.push(std::make_unique<World>(m_state, m_window, m_camera, m_mouse));
 }
 
 void Game::run()
@@ -33,8 +37,20 @@ void Game::run()
 
   while (!glfwWindowShouldClose(m_window))
   {
-    m_state.input();
+    frames++;
 
+    auto now = clock_type::now();
+    std::chrono::duration<double> elapsed = now - lastTime;
+
+    if (elapsed.count() >= 0.1) 
+    {
+      fps = frames / elapsed.count();
+      m_window.title(std::to_string(fps));
+      frames = 0;
+      lastTime = now;
+    }
+
+    m_state.input();
     m_state.loop();
   }
 }

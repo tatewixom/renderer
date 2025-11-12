@@ -52,6 +52,7 @@ public:
   ~Buffer();
 
   constexpr GLuint getVAO() const { return m_VAO; }
+  constexpr GLuint getEBO() const { return m_EBO; }
   constexpr GLsizei getStride() const { return 12 * sizeof(float); }
   template <typename T>
   constexpr std::size_t getSize(const std::vector<T>& vec) const { return vec.size() * sizeof(T); }
@@ -68,3 +69,4 @@ private:
   GLuint m_VAO{};
   GLuint m_EBO{};
 };
+

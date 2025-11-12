@@ -3,6 +3,8 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
 
+#include <string_view>
+
 class Window
 {
 public:
@@ -19,6 +21,8 @@ public:
 
   void size(int width, int height) { glViewport(0, 0, width, height); }
   void close() { glfwSetWindowShouldClose(m_window, true); }
+
+  void title(std::string_view title);
 
 private:
   GLFWwindow* m_window{};

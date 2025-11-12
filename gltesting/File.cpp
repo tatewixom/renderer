@@ -10,7 +10,7 @@ std::optional<std::string> File::retrieve(std::string_view fileName)
 
   if (!in_file.is_open())
   {
-    std::cerr << "ERROR::FILE::RETRIEVE::FAILURE_IN_OPENING_FILE\n";
+    std::cerr << "ERROR::FILE::RETRIEVE()::FAILURE_IN_OPENING_FILE\n";
     return std::nullopt;
   }
 

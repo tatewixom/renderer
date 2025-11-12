@@ -69,6 +69,12 @@
     <ClCompile Include="Mouse.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Ditto.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="basic.vs">
@@ -93,6 +99,24 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="interface.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="instancing_normal_light.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="instancing_normal_light.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="instancing_spotlight.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="instancing_spotlight.fs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
@@ -144,6 +168,15 @@
     </ClInclude>
     <ClInclude Include="Mouse.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ditto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Points.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
