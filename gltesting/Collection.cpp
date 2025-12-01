@@ -7,6 +7,7 @@
 #include <glm/gtx/norm.hpp>
 
 #include <algorithm>
+#include <iostream>
 
 Collection::Collection(int count, const Object& object)
   : m_object{ object }

@@ -3,16 +3,12 @@
 std::deque<Texture*> Texture::s_textureQueue{};
 int Texture::s_activeUnits{};
 
-Texture::Texture(const std::string_view path)
+void Texture::initialize(const std::string_view path)
 {
   if (s_textureQueue.size() < getMaxUnits())
   {
     m_assignedUnit = static_cast<int>(GL_TEXTURE0) + s_activeUnits;
     ++s_activeUnits; //increments one for counting active units
-
-    load(path);
-
-    s_textureQueue.push_front(this);
   }
   else if (s_textureQueue.size() >= getMaxUnits())
   {
@@ -21,11 +17,32 @@ Texture::Texture(const std::string_view path)
 
     s_textureQueue.back()->m_assignedUnit = 0;
     s_textureQueue.pop_back();
-
-    load(path);
-
-    s_textureQueue.push_front(this);
   }
+
+  load(path);
+
+  s_textureQueue.push_front(this);
+}
+
+void Texture::initialize(const unsigned char* data, int width, int height)
+{
+  if (s_textureQueue.size() < getMaxUnits())
+  {
+    m_assignedUnit = static_cast<int>(GL_TEXTURE0) + s_activeUnits;
+    ++s_activeUnits; //increments one for counting active units
+  }
+  else if (s_textureQueue.size() >= getMaxUnits())
+  {
+    //removing back texture from active units
+    m_assignedUnit = s_textureQueue.back()->m_assignedUnit;
+
+    s_textureQueue.back()->m_assignedUnit = 0;
+    s_textureQueue.pop_back();
+  }
+
+  load(data, width, height);
+
+  s_textureQueue.push_front(this);
 }
 
 int Texture::use()
@@ -91,6 +108,29 @@ void Texture::load(const std::string_view path)
   }
 
   stbi_image_free(data);
+}
+
+void Texture::load(const unsigned char* data, int width, int height)
+{
+  //loading and creating a texture
+  glActiveTexture(static_cast<GLenum>(m_assignedUnit));
+  glGenTextures(1, &m_id);
+  glBindTexture(GL_TEXTURE_2D, m_id);
+
+  //defining how opengl should render our pixels
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  if (!data)
+    std::cerr << "ERROR::TEXTURE.CPP::LOAD()::DATA_CHAR_ARRAY_EMPTY\n";
+  else
+  {
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D); 
+  }
 }
 
 GLint Texture::getMaxUnits()

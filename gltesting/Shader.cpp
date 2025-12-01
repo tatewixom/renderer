@@ -20,31 +20,6 @@ static constexpr std::string_view getString(Shader::Variables var)
   }
 }
 
-Shader::Shader(std::string_view vertex, std::string_view fragment)
-  : m_program{ glCreateProgram() }
-  , m_vertex{ glCreateShader(GL_VERTEX_SHADER) }
-  , m_fragment{ glCreateShader(GL_FRAGMENT_SHADER) }
-{
-  std::optional<std::string> vertexFile{ File::retrieve(vertex) };
-  std::optional<std::string> fragmentFile{ File::retrieve(fragment) };
-
-  if ((!vertexFile) || (!fragmentFile))
-    ;
-  else
-  {
-    //compile vertex shader
-    const char* vertContents{ vertexFile.value().c_str() };
-    compile(m_vertex, vertContents);
-
-    //compile fragment shader
-    const char* fragContents{ fragmentFile.value().c_str() };
-    compile(m_fragment, fragContents);
-
-    //link shaders to program
-    link(m_program, m_vertex, m_fragment);
-  }
-}
-
 Shader::~Shader()
 {
   deactivate();

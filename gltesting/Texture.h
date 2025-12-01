@@ -10,7 +10,14 @@
 class Texture
 {
 public:
-  Texture(const std::string_view path);
+  enum Type
+  {
+    specular,
+    diffuse,
+  };
+
+  void initialize(const std::string_view path);
+  void initialize(const unsigned char* data, int width, int height);
 
   GLint getID() const { return m_id; }
   int getLocation() const { return m_assignedUnit - static_cast<int>(GL_TEXTURE0); }
@@ -21,6 +28,7 @@ private:
   bool isRGBA(const std::string_view path);
 
   void load(const std::string_view path);
+  void load(const unsigned char* data, int width, int height);
 
   GLint getMaxUnits();
 

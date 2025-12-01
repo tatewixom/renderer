@@ -22,9 +22,11 @@ public:
 
   Mouse(Window& window);
 
+  void update();
+
   Position& getPosition() { return m_position; }
-  Position& getOffset() { return m_offset; }
-  Position& getLastPosition() { return m_lastPosition; }
+  Position getOffset() const { return m_offset; }
+  Position getLastPosition() const { return m_lastPosition; }
   Button& getButton() { return m_button; }
 
   void center();
@@ -34,8 +36,10 @@ public:
 
   bool isButtonPressed(int mouseButton) const;
   bool isDisabled() const;
+  bool isMoving() const { return m_position != m_lastPosition; }
 
   void setLastPosition(); //sets last position from being in view mode
+  void setPosition(Position& position) { m_position = position; }
 
 private:
   Window& m_window;

@@ -78,12 +78,13 @@ public:
 
     Element() = default;
 
-    Element(const Buffer& buffer, glm::vec2 position, const Dimension& dimensions)
+    Element(glm::vec2 position, const Dimension& dimensions)
       : m_position{ position }
-      , m_VAO{ buffer.getVAO() }
       , m_dimensions{ dimensions }
       , m_hitbox{ Hitbox::Area{ m_position.x, m_position.y, m_position.x + m_dimensions.width(), m_position.y + m_dimensions.height() } }
     { }
+
+    void setVAO(const Buffer& buffer) { m_VAO = buffer.getVAO(); }
 
     Dimension dimensions() const { return m_dimensions; }
     void dimensions(const Dimension& dimensions);

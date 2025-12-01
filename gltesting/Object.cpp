@@ -17,6 +17,11 @@ Object::Object(const GLuint VAO, glm::vec3 position, const Material & material)
   , m_VAO{ VAO }
 { }
 
+void Object::initialize(const Buffer & buffer)
+{
+  m_VAO = buffer.getVAO();
+}
+
 void Object::move(const glm::vec3& position)
 {
   m_position = position;

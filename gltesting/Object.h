@@ -61,6 +61,8 @@ public:
 
   Object(const GLuint VAO, glm::vec3 position, const Material& material);
 
+  void initialize(const Buffer& buffer);
+
   //static object manipulation/initialization
   void move(const glm::vec3& direction);
   void rotate(const Rotation& rotation);

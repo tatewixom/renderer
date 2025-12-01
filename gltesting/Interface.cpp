@@ -38,12 +38,12 @@ namespace Points
 
 namespace
 {
-  Buffer backgroundBuffer{ Points::backdrop };
+  Buffer backgroundBuffer;
 
-  Shader shader{ "interface.vs", "interface.fs" };
+  Shader shader{};
 
-  Interface::Element background{ backgroundBuffer, glm::vec2{ 0.0f }, Interface::Element::Dimension{ Points::bd.x,  Points::bd.y } };
-  Interface::Element grabBar{ backgroundBuffer, glm::vec2{ 0.0f }, Interface::Element::Dimension{ Points::bd.x,  Points::bd.y } };
+  Interface::Element background{ glm::vec2{ 0.0f }, Interface::Element::Dimension{ Points::bd.x,  Points::bd.y } };
+  Interface::Element grabBar{ glm::vec2{ 0.0f }, Interface::Element::Dimension{ Points::bd.x,  Points::bd.y } };
 }
 
 Interface::Interface(State& state, Window& window, Camera& camera, Mouse& mouse)
@@ -57,6 +57,12 @@ Interface::Interface(State& state, Window& window, Camera& camera, Mouse& mouse)
 
 void Interface::initialize()
 {
+  backgroundBuffer.initialize(Points::backdrop); //initializing buffer
+  background.setVAO(backgroundBuffer); //setting VAO's 
+  grabBar.setVAO(backgroundBuffer);
+
+  shader.initialize("interface.vs", "interface.fs");
+
   grabBar.scalar(glm::vec2{ 1.f, 0.1f });
 
   background.position(glm::vec2{ 0.0f , m_window.height() - background.dimensions().height() });
@@ -77,13 +83,16 @@ void Interface::input()
     m_mouse.isButtonPressed(GLFW_MOUSE_BUTTON_LEFT) &&
     grabBar.hitbox().isIntersecting(static_cast<float>(m_mouse.getPosition().x), m_window.height() - static_cast<float>(m_mouse.getPosition().y)))
   {
-    //offset = newMousePosition - lastMousePosition;
+    //TODO: grabbar stopped working after setting up new mouse system, fix it
+
+    static Mouse::Position direction{};
+    direction = m_mouse.getPosition() - m_mouse.getLastPosition();
 
     static Mouse::Position lastMousePosition{};
 
     if (lastMousePosition != m_mouse.getPosition())
     {
-      background.position(glm::vec2{ background.position().x + m_mouse.getOffset().x, background.position().y + m_mouse.getOffset().y });
+      background.position(glm::vec2{ background.position().x + direction.x, background.position().y - direction.y });
       grabBar.position(background, glm::vec2{ 0.0f, background.dimensions().height() - grabBar.dimensions().height() });
       //need to make a set of logic that has the window move in whatever direction the mouse moves in the same amount of units and doesn't lag behind 
     }

@@ -6,6 +6,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+class Mouse;
+
 class Camera
 {
 public:
@@ -37,11 +39,8 @@ public:
   float sensitivity{};
   float zoom{};
 
-  void keyboard(Movement direction, float deltaTime);
-  void mouse(float xoffset, float yoffset, GLboolean constrainPitch = true);
+  void move(Movement direction, float deltaTime);
+  void update(Mouse& mouse);
 
   glm::mat4 getViewMatrix() const { return glm::lookAt(position, position + front, up); }
-
-private:
-  void updateVectors();
 };

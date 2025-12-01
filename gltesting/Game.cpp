@@ -6,8 +6,6 @@
 
 #include <chrono>
 
-Game game{};
-
 namespace
 {
   using clock_type = std::chrono::high_resolution_clock;
@@ -49,6 +47,10 @@ void Game::run()
       frames = 0;
       lastTime = now;
     }
+
+    glfwPollEvents();
+    m_mouse.update();
+    m_camera.update(m_mouse);
 
     m_state.input();
     m_state.loop();

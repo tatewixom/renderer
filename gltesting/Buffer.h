@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Texture.h"
-
 #include <vector>
 #include <array>
 #include <string>
@@ -47,9 +45,11 @@ public:
     int offset{};
   };
 
-  Buffer(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
-  Buffer(const std::vector<float>& vertices);
+  Buffer() = default;
   ~Buffer();
+
+  void initialize(const std::vector<float>& vertices, const std::vector<unsigned int>& indices);
+  void initialize(const std::vector<float>& vertices);
 
   constexpr GLuint getVAO() const { return m_VAO; }
   constexpr GLuint getEBO() const { return m_EBO; }

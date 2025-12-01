@@ -15,10 +15,10 @@ Ditto::Rotation::Rotation(const glm::vec3& axis, float angle)
     m_axis = glm::vec3{ 0.f, 1.f, 0.f };
 }
 
-Ditto::Ditto(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<Layout::Attribute>& attributes, const Shader& shader)
-  : Mesh{ vertices, indices, attributes }
-  , m_shader{ shader }
-{ }
+void Ditto::initialize(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<Layout::Attribute>& attributes)
+{
+  Mesh::initialize(vertices, indices, attributes);
+}
 
 void Ditto::sendInstances(std::vector<glm::mat4> matrices, const std::vector<Motions>& motions, unsigned int location)
 {

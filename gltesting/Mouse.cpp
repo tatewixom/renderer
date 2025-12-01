@@ -10,6 +10,24 @@ Mouse::Mouse(Window& window)
   glfwSetMouseButtonCallback(m_window, Callback::mouseButton);
 }
 
+void Mouse::update()
+{
+  static bool firstMouse{ true };
+
+  if (firstMouse) 
+  {
+    center();
+    m_position = Mouse::Position{ m_window.width() / 2.0f, m_window.height() / 2.0f }; //preventing mouse "snapping" into position
+    m_lastPosition = m_position;
+    firstMouse = false;
+  }
+
+  m_offset.x = m_position.x - m_lastPosition.x; //calculating offset
+  m_offset.y = m_lastPosition.y - m_position.y;
+
+  m_lastPosition = m_position; //setting last position
+}
+
 void Mouse::center()
 {
   glfwSetCursorPos(m_window, m_window.width() / 2, m_window.height() / 2);

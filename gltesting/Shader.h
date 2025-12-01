@@ -23,7 +23,6 @@ public:
     mvp,
   };
 
-  Shader(std::string_view vertex, std::string_view fragment);
   Shader() = default;
   ~Shader();
 
@@ -46,7 +45,7 @@ public:
   void set(const std::vector<std::pair<std::string_view, T>>& vec);
 
   void set(std::string_view var, int x) const;
-
+ 
   void set(Shader::Variables var, const glm::mat4& mat) const;
 
   void set(std::string_view var, const glm::mat4& mat) const;

@@ -5,8 +5,9 @@
 #include "Random.h"
 #include "Mouse.h"
 #include "Points.h"
-
-#include <memory>
+#include "Texture.h"
+#include "Model.h"
+#include "Spaces.h"
 
 namespace
 {
@@ -14,27 +15,16 @@ namespace
   float deltaTime{};
   float lastFrame{};
 
-  Buffer buffer{ Points::Cube::vertices, Points::Cube::indices };
+  Buffer buffer;
 
-  Shader basic{ "basic.vs", "basic.fs" };
-  Shader color{ "color.vs", "color.fs" };
-  Shader light{ "light.vs", "light.fs" };
-  Shader test{ "test.vs", "test.fs" };
-  Shader instancing_spotlight{ "instancing_spotlight.vs", "instancing_spotlight.fs" };
+  Shader basic{};
+  Shader color{};
+  Shader light{};
+  Shader test{};
+  Shader instancing_spotlight{};
 
-  Ditto ditto
-  {
-    Points::Cube::vertices,
-    Points::Cube::indices,
-    std::vector<Mesh::Layout::Attribute>
-    {
-      Mesh::Layout::Attribute{ 0u, 3, 12 * sizeof(float), 0 },
-      Mesh::Layout::Attribute{ 1u, 4, 12 * sizeof(float), (sizeof(float) * 3) },
-      Mesh::Layout::Attribute{ 2u, 2, 12 * sizeof(float), (sizeof(float) * 7) },
-      Mesh::Layout::Attribute{ 3u, 3, 12 * sizeof(float), (sizeof(float) * 9) }
-    },
-    instancing_spotlight
-  };
+  Ditto ditto{};
+  Model_t model_t{};
 
   Collection cubes
   {
@@ -49,10 +39,10 @@ namespace
 
   Object lights{ buffer, glm::vec3{ 0.0f }, Object::Material{} };
 
-  Texture container{ "assets/container.jpg" };
-  Texture awesomeFace{ "assets/awesomeface.png" };
-  Texture steelbox{ "assets/container2.png" };
-  Texture steelbox_specular{ "assets/container2_specular.png" };
+  Texture container{};
+  Texture awesomeFace{};
+  Texture steelbox{};
+  Texture steelbox_specular{};
 
   //glm::vec3 randomColor{ Random::get(10, 90), Random::get(10, 90), Random::get(10, 90), };
 }
@@ -68,6 +58,55 @@ World::World(State& state, Window& window, Camera& camera, Mouse& mouse)
 
 void World::initialize()
 {
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+  //buffer init
+  buffer.initialize(Points::Cube::vertices, Points::Cube::indices);
+
+  //cubes init
+  for (auto& c : cubes)
+    c.initialize(buffer);
+
+  //ditto init
+  ditto.initialize
+  (
+    Points::Cube::vertices,
+    Points::Cube::indices,
+    std::vector<Layout::Attribute>
+  {
+    Layout::Attribute{ 0u, 3, 12 * sizeof(float), 0 },
+      Layout::Attribute{ 1u, 4, 12 * sizeof(float), (sizeof(float) * 3) },
+      Layout::Attribute{ 2u, 2, 12 * sizeof(float), (sizeof(float) * 7) },
+      Layout::Attribute{ 3u, 3, 12 * sizeof(float), (sizeof(float) * 9) }
+  });
+
+  //model init
+  model_t.initialize("assets/backpack/scene.gltf");
+
+  /*
+  glBindVertexArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  */
+
+  
+
+  //shader init
+  basic.initialize("basic.vs", "basic.fs");
+  color.initialize("color.vs", "color.fs");
+  light.initialize("light.vs", "light.fs");
+  test.initialize("test.vs", "test.fs");
+  instancing_spotlight.initialize("instancing_spotlight.vs", "instancing_spotlight.fs");
+
+  ditto.setShader(instancing_spotlight);
+
+  //texture init
+  container.initialize("assets/container.jpg");
+  awesomeFace.initialize("assets/awesomeface.png");
+  steelbox.initialize("assets/container2.png");
+  steelbox_specular.initialize("assets/container2_specular.png");
+
+  //shader uniforms
   basic.activate();
   basic.set("texture1", container.use());
   basic.set("texture2", awesomeFace.use());
@@ -112,26 +151,27 @@ void World::initialize()
   instancing_spotlight.set("spotlight.quadratic", 0.032f);
   instancing_spotlight.set("spotlight.direction", glm::vec3{ -0.2f, -1.0f, -0.3f });
   instancing_spotlight.set("spotlight.cutoff", glm::cos(glm::radians(35.0f)));
-  instancing_spotlight.set("spotlight.outerCutoff", glm::cos(glm::radians(40.0f)));
+  instancing_spotlight.set("spotlight.outerCutoff", glm::cos(glm::radians(45.0f)));
 
   test.activate();
   test.set("texture1", steelbox.use());
 
   lights.scale(glm::vec3{ 0.2f });
 
-  std::size_t amount{ 100000 };
+  //instancing
+  std::size_t amount{ 10 };
   std::vector<glm::mat4> matrices(amount);
   std::vector<Ditto::Motions> motions{};
   motions.reserve(amount);
   for (std::size_t i{ 0 }; i < amount; ++i)
   {
     motions.push_back(
-      Ditto::Motions
-      { 
-        glm::vec3{ Random::get(-100, 100), Random::get(-100, 100), Random::get(-100, 100) },
-        glm::vec3{ 1.f },
-        Ditto::Rotation{ glm::vec3{ Random::get(0, 10), Random::get(0, 10), Random::get(0, 10) }, static_cast<float>(Random::get(0, 36000)) / 100.f }
-      });
+    Ditto::Motions
+    {
+      glm::vec3{ Random::get(-10, 10), Random::get(-10, 10), Random::get(-10, 10) },
+      glm::vec3{ 1.f },
+      Ditto::Rotation{ glm::vec3{ Random::get(0, 10), Random::get(0, 10), Random::get(0, 10) }, static_cast<float>(Random::get(0, 36000)) / 100.f }
+    });
   }
 
   ditto.sendInstances(matrices, motions, 4u);
@@ -148,17 +188,17 @@ void World::input()
 
   //moving camera
   const float cameraSpeed = 20.f * deltaTime; // adjust accordingly
-  if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_W))
     m_camera.position += cameraSpeed * m_camera.front;
-  if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_S))
     m_camera.position -= cameraSpeed * m_camera.front;
-  if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_A))
     m_camera.position -= glm::normalize(glm::cross(m_camera.front, m_camera.up)) * cameraSpeed;
-  if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_D))
     m_camera.position += glm::normalize(glm::cross(m_camera.front, m_camera.up)) * cameraSpeed;
-  if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_SPACE))
     m_camera.position += m_camera.up * cameraSpeed;
-  if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_LEFT_SHIFT))
     m_camera.position -= m_camera.up * cameraSpeed;
 
   //cubes manipulation
@@ -169,17 +209,17 @@ void World::input()
 
   //moving light position
   const float objectSpeed{ 5.f * deltaTime };
-  if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_UP))
     lights.position(lights.position() - glm::vec3{ 0.0f, 0.0f, 1.0f } * objectSpeed);
-  if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_RIGHT))
     lights.position(lights.position() + glm::vec3{ 1.0f, 0.0f, 0.0f } * objectSpeed);
-  if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_LEFT))
     lights.position(lights.position() - glm::vec3{ 1.0f, 0.0f, 0.0f } * objectSpeed);
-  if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_DOWN))
     lights.position(lights.position() + glm::vec3{ 0.0f, 0.0f, 1.0f } * objectSpeed);
-  if (glfwGetKey(m_window, GLFW_KEY_R) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_R))
     lights.position(lights.position() + glm::vec3{ 0.0f, 1.0f, 0.0f } * objectSpeed);
-  if (glfwGetKey(m_window, GLFW_KEY_F) == GLFW_PRESS)
+  if (Input::isKeyPressed(m_window, GLFW_KEY_F))
     lights.position(lights.position() - glm::vec3{ 0.0f, 1.0f, 0.0f } * objectSpeed);
 
   //states
@@ -194,7 +234,8 @@ void World::input()
 void World::clear()
 {
   //clearing screen and rendering
-  glClearColor(0.06f, 0.06f, 0.06f, 0.f); //signature gray
+  glClearColor(1.f, 1.f, 1.0f, 0.f);
+  //glClearColor(0.06f, 0.06f, 0.06f, 0.f); //signature gray
   //glClearColor(0.f, 0.f, 0.f, 0.f); //black
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -203,6 +244,7 @@ void World::update()
 {
   Object::update(m_camera, m_window);
   Ditto::update(m_camera, m_window);
+  Spaces::update(m_camera, m_window);
 
   color.activate();
   //color.set("lightPoint.position", m_camera.position);
@@ -225,9 +267,9 @@ void World::update()
 
 void World::render()
 {
-  glfwPollEvents();
-
   //cubes.draw(color);
+  model_t.draw(color);
+
   //lights.draw(light);
 
   ditto.draw();

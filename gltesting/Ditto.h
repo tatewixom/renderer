@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Buffer.h"
 #include "Shader.h"
 #include "Mesh.h"
 
@@ -45,9 +44,11 @@ public:
     Rotation rotation{};
   };
 
-  Ditto(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<Layout::Attribute>& attributes, const Shader& shader);
+  void initialize(const std::vector<float>& vertices, const std::vector<unsigned int>& indices, const std::vector<Layout::Attribute>& attributes);
 
   void sendInstances(std::vector<glm::mat4> matrices, const std::vector<Motions>& motions, unsigned int location);
+
+  void setShader(Shader& shader) { m_shader = shader; };
 
   void draw();
 
@@ -55,7 +56,7 @@ public:
   static void update(const Camera& camera, const Window& window);
 
 private:
-  Buffer m_instanceBuffer{};
+  VertexBuffer m_instanceBuffer{};
   Shader m_shader;
   std::size_t m_instanceCount{};
 

@@ -1,9 +1,13 @@
 #include "Buffer.h"
 
-//for texture loading
-#include <stb/stb_image.h>
+Buffer::~Buffer()
+{
+  glDeleteBuffers(1, &m_VBO);
+  glDeleteVertexArrays(1, &m_VAO);
+  glDeleteBuffers(1, &m_EBO);
+}
 
-Buffer::Buffer(const std::vector<float>& vertices, const std::vector<unsigned int>& indices)
+void Buffer::initialize(const std::vector<float>& vertices, const std::vector<unsigned int>& indices)
 {
   //generating vertex array object
   glGenVertexArrays(1, &m_VAO);
@@ -20,22 +24,22 @@ Buffer::Buffer(const std::vector<float>& vertices, const std::vector<unsigned in
 
   //creating preferred settings for telling opengl how to connect data
   glEnableVertexAttribArray(m_position.location);
-  glVertexAttribPointer(m_position.location, m_position.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_position.offset)); //fix warning at last parameter
+  glVertexAttribPointer(m_position.location, m_position.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_position.offset)); //fix warning at last parameter
 
   //telling opengl how to interpret colors
   glEnableVertexAttribArray(m_color.location);
-  glVertexAttribPointer(m_color.location, m_color.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_color.offset)); //fix warning at last parameter
+  glVertexAttribPointer(m_color.location, m_color.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_color.offset)); //fix warning at last parameter
 
   //telling opengl how to interpret textures
   glEnableVertexAttribArray(m_texture.location);
-  glVertexAttribPointer(m_texture.location, m_texture.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_texture.offset));
+  glVertexAttribPointer(m_texture.location, m_texture.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_texture.offset));
 
   glEnableVertexAttribArray(m_normal.location);
-  glVertexAttribPointer(m_normal.location, m_normal.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_normal.offset));
+  glVertexAttribPointer(m_normal.location, m_normal.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_normal.offset));
   glEnableVertexAttribArray(0); //disable
 }
 
-Buffer::Buffer(const std::vector<float>& vertices)
+void Buffer::initialize(const std::vector<float>& vertices)
 {
   //generating vertex array object
   glGenVertexArrays(1, &m_VAO);
@@ -47,29 +51,22 @@ Buffer::Buffer(const std::vector<float>& vertices)
 
   //creating preferred settings for telling opengl how to connect data
   glEnableVertexAttribArray(m_position.location);
-  glVertexAttribPointer(m_position.location, m_position.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_position.offset)); //fix warning at last parameter
+  glVertexAttribPointer(m_position.location, m_position.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_position.offset)); //fix warning at last parameter
   glEnableVertexAttribArray(0); //disable
 
   //telling opengl how to interpret colors
   glEnableVertexAttribArray(m_color.location);
-  glVertexAttribPointer(m_color.location, m_color.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_color.offset)); //fix warning at last parameter
+  glVertexAttribPointer(m_color.location, m_color.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_color.offset)); //fix warning at last parameter
   glEnableVertexAttribArray(0); //disable
 
   //telling opengl how to interpret textures
   glEnableVertexAttribArray(m_texture.location);
-  glVertexAttribPointer(m_texture.location, m_texture.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_texture.offset));
+  glVertexAttribPointer(m_texture.location, m_texture.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_texture.offset));
   glEnableVertexAttribArray(0); //disable
 
   glEnableVertexAttribArray(m_normal.location);
-  glVertexAttribPointer(m_normal.location, m_normal.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_normal.offset));
+  glVertexAttribPointer(m_normal.location, m_normal.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_normal.offset));
   glEnableVertexAttribArray(0); //disable
-}
-
-Buffer::~Buffer()
-{
-  glDeleteBuffers(1, &m_VBO);
-  glDeleteVertexArrays(1, &m_VAO);
-  glDeleteBuffers(1, &m_EBO);
 }
 
 void Buffer::remoteVAO(GLuint& VAO) const 
@@ -82,7 +79,7 @@ void Buffer::remoteVAO(GLuint& VAO) const
 
   // set the vertex attribute 
   glEnableVertexAttribArray(m_position.location);
-  glVertexAttribPointer(m_position.location, m_position.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_position.offset));
+  glVertexAttribPointer(m_position.location, m_position.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_position.offset));
   glEnableVertexAttribArray(0);
 }
 
@@ -98,7 +95,7 @@ GLuint Buffer::remoteVAO() const
 
   // set the vertex attribute 
   glEnableVertexAttribArray(m_position.location);
-  glVertexAttribPointer(m_position.location, m_position.size, GL_FLOAT, GL_FALSE, getStride(), (void*)(m_position.offset));
+  glVertexAttribPointer(m_position.location, m_position.size, GL_FLOAT, GL_FALSE, getStride(), reinterpret_cast<void*>(m_position.offset));
   glEnableVertexAttribArray(0);
 
   return VAO;
